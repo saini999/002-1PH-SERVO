@@ -16,6 +16,11 @@ Current CT Sensor: Pin A2 (Through Voltage Divider)
 Servo Motor Forward: Pin 5
 Servo Motor Reverse: Pin 6
 
+ok/Menu button: Pin 2
+plus/Up button: Pin 3
+minus/Down button: Pin 4
+setup/Settings button: Pin 7
+
 */
 
 #include <EEPROM.h>
@@ -41,31 +46,41 @@ int enc;
 const int ok = 2;
 const int plus = 3;
 const int minus = 4;
-//const int setupPin = A3;
+const int setupPin = 7;
 const int inVolt = A0;
 const int outVolt = A1;
 const int current = A2;
 const int motor0Fwd = 5;
 const int motor0Rev = 6;
 int encMenu;
+int menu;
 //int encMenu = 0;
 
 bool okold = false;
 bool plusold = false;
 bool minusold = false;
-
+bool resetrefresh = false;
+//uncomment these variables if running without setup pin
+/*
+bool mode = false;
+bool switched = false;
+*/
 
 void setup() {
 setupDisplay();
 setIN(ok);
 setIN(plus);
 setIN(minus);
-//setIN(setupPin);
+//comment setup pin if not needed
+setIN(setupPin); //change setup mode from RUN/SETUP
 setIN(inVolt);
 setIN(outVolt);
 setIN(current);
 setOUT(motor0Fwd);
 setOUT(motor0Rev);
+
+//This for Variables to read from Memory on startup
+//comment these variables while testing in proteus
 IHV = 2 * EEPROM.read(0);
 ILV = 2 * EEPROM.read(1);
 OHV = 2 * EEPROM.read(2);
@@ -76,15 +91,32 @@ TON = EEPROM.read(6);
 TOFF = EEPROM.read(7);
 DIFF = EEPROM.read(8);
 
+//uncomment these variables while testing in proteus
+/*
+IHV = 560;
+ILV = 480;
+OHV = 580;
+OLV = 420;
+SETV = 512;
+OVL = 800;
+//TON = EEPROM.read(6);
+//TOFF = EEPROM.read(7);
+DIFF = 5;
+*/
 
-//attachInterrupt(A3, encmenuup, RISING);
 }
-bool switched = false;
-bool mode = false;
 void loop() {
   checkok();
   checkplus();
   checkminus();
+  //comment this if running without setup pin
+  if(read(setupPin)){
+    runSetup();
+  } else {
+    runNormal();
+  }
+
+  /* Uncomment this for not using setup Pin
   if(mode){
     runSetup();
   } else {
@@ -98,6 +130,7 @@ void loop() {
   if(!read(ok) && !read(plus) && !read(minus) && switched == true){
     switched = false;
   }
+  */
 }
 bool inputVok() {
   if(IV() > ILV && IV() < IHV){
@@ -145,9 +178,44 @@ void runNormal() {
     digitalWrite(motor0Rev, LOW);
   }
 
-  display("run",0);
+  updateScreenData();
 
 }
+
+void updateScreenData() {
+  //uncomment !mode and comment !read(setupPin) if setupPin is not being used
+  if(/*!mode*/!read(setupPin)){
+    if(!resetrefresh){
+      refresh.reset();
+      resetrefresh = true;
+    }
+    if(refresh.triggered()){
+      menu++;
+    }
+    if(menu == 0){
+      display("InUL", 0);
+    }
+    if(menu == 1){
+      displayVar(IV(), 0);
+    }
+    if(menu == 2){
+      display("OPUL", 0);
+    }
+    if(menu == 3){
+      displayVar(OV(), 0);
+    }
+    if(menu == 4){
+      display("LoAd", 0);
+    }
+    if(menu == 5){
+      displayVar(amp(), 0);
+    }
+    if(menu == 6){
+      menu = 0;
+    }
+  }
+}
+
 
 int IV() {
   return analogRead(inVolt);
@@ -421,6 +489,4 @@ void setupDisplay() {
   display1.Begin(displayType, numberOfDigits, digit1, digit2, digit3, digit4, segA, segB, segC, segD, segE, segF, segG, segDP);
   
   display1.SetBrightness(100); 
-  // put your setup code here, to run once:
-  
 }
