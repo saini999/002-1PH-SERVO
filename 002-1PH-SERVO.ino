@@ -21,6 +21,14 @@ plus/Up button: Pin 3
 minus/Down button: Pin 4
 setup/Settings button: Pin 7
 
+
+ALARMS: ErIn = Input Voltage Error (Either too low or too high)
+        ErOt = Output Voltage Error (Either too low or too high)
+        ErOL = OverLoad Error (Current drawn is more than the rated current)
+        ErAL = All Alarms (Possible Reason: Board is not connected to Input and Output of Dimmer/Inverter
+               Load Sensor is Not connected or this is first run and parameters are yet to be Configured)
+
+
 */
 
 #include <EEPROM.h>
