@@ -21,6 +21,16 @@ plus/Up button: Pin 3
 minus/Down button: Pin 4
 setup/Settings button: Pin 7
 
+Parameters: IHu/IHv = Input High Voltage
+            ILu/ILv = Input Low Voltage
+            OHu/OHv = Output High Voltage
+            OLu/OLv = Output Low Voltage
+            SETu/SETv = Set Voltage
+            OuL/OvL = Overload Current
+            TOn = Relay/Contactor ON Delay
+            TOff = Relay/Contactor CUTOFF Delay
+            DIFF = Voltage Difference from Set Voltage
+            
 
 ALARMS: ErIn = Input Voltage Error (Either too low or too high)
         ErOt = Output Voltage Error (Either too low or too high)
