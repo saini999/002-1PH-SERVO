@@ -1,5 +1,7 @@
 {
-    "board": "arduino:avr:uno",
+    "board": "arduino:avr:mega",
     "sketch": "002-1PH-SERVO.ino",
-    "port": "COM1"
+    "port": "COM1",
+    "programmer": "arduino:usbasp",
+    "configuration": "cpu=atmega2560"
 }

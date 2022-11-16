@@ -4,17 +4,17 @@ Description: Automatic Voltage Stablizer Control for Single Phase AC Supply
 Project URL: https://github.com/saini999/002-1PH-SERVO
 Author: saini999, https://github.com/saini999 // Discord: N00R#2080
 
-Arduino Board: Arduino UNO ( to be changed to Mega2560 in future due to less IO pins)
+Arduino Board: Arduino Mega2560 ( Changed to Mega2560 from Uno due to less IOs on Uno)
 
 Project Start Date: 16-Nov-2022
 Last Update: 16-Nov-2022
 
-Input Voltage: Pin A3 (Through Voltage Divider)
-Output Voltage: Pin A4 (Through Voltage Divider)
-Current CT Sensor: Pin A5 (Through Voltage Divider)
+Input Voltage: Pin A0 (Through Voltage Divider)
+Output Voltage: Pin A1 (Through Voltage Divider)
+Current CT Sensor: Pin A2 (Through Voltage Divider)
 
-Servo Motor Forward: Pin 0
-Servo Motor Reverse: Pin 1
+Servo Motor Forward: Pin 5
+Servo Motor Reverse: Pin 6
 
 */
 
@@ -38,15 +38,15 @@ int TON;
 int TOFF;
 int DIFF;
 int enc;
-const int ok = A0;
-const int plus = A1;
-const int minus = A2;
+const int ok = 2;
+const int plus = 3;
+const int minus = 4;
 //const int setupPin = A3;
-const int inVolt = A3;
-const int outVolt = A4;
-const int current = A5;
-const int motor0Fwd = 0;
-const int motor0Rev = 1;
+const int inVolt = A0;
+const int outVolt = A1;
+const int current = A2;
+const int motor0Fwd = 5;
+const int motor0Rev = 6;
 int encMenu;
 //int encMenu = 0;
 
@@ -401,20 +401,20 @@ void display(String str, int deci) {
 void setupDisplay() {
     int displayType = COMMON_CATHODE;
 
-   int digit1 = 2; 
-   int digit2 = 3; 
-   int digit3 = 4; 
-   int digit4 = 5; 
+   int digit1 = 50; 
+   int digit2 = 51; 
+   int digit3 = 52; 
+   int digit4 = 53; 
    
    
-   int segA = 6; 
-   int segB = 7;
-   int segC = 8; 
-   int segD = 9; 
-   int segE = 10; 
-   int segF = 11; 
-   int segG = 12; 
-   int segDP = 13; 
+   int segA = 42; 
+   int segB = 43;
+   int segC = 44; 
+   int segD = 45; 
+   int segE = 46; 
+   int segF = 47; 
+   int segG = 48; 
+   int segDP = 49; 
    
   int numberOfDigits = 4; 
 
