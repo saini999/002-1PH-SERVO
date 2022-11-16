@@ -18,10 +18,15 @@ int TON;
 int TOFF;
 int DIFF;
 int enc;
-const int ok = 2;
+const int ok = A0;
 const int plus = A1;
 const int minus = A2;
-const int setupPin = A3;
+//const int setupPin = A3;
+const int inVolt = A3;
+const int outVolt = A4;
+const int current = A5;
+const int motor0Fwd = 0;
+const int motor0Rev = 1;
 int encMenu;
 //int encMenu = 0;
 
@@ -35,7 +40,12 @@ setupDisplay();
 setIN(ok);
 setIN(plus);
 setIN(minus);
-setIN(setupPin);
+//setIN(setupPin);
+setIN(inVolt);
+setIN(outVolt);
+setIN(current);
+setOUT(motor0Fwd);
+setOUT(motor0Rev);
 IHV = 2 * EEPROM.read(0);
 ILV = 2 * EEPROM.read(1);
 OHV = 2 * EEPROM.read(2);
@@ -49,19 +59,87 @@ DIFF = EEPROM.read(8);
 
 //attachInterrupt(A3, encmenuup, RISING);
 }
-
+bool switched = false;
+bool mode = false;
 void loop() {
   checkok();
   checkplus();
   checkminus();
-  if(read(setupPin)){
+  if(mode){
     runSetup();
   } else {
     runNormal();
   }
+  if(read(ok) && read(plus) && read(minus) && switched == false){
+    mode = !mode;
+    switched = true;
+    encMenu = 0;
+  }
+  if(!read(ok) && !read(plus) && !read(minus) && switched == true){
+    switched = false;
+  }
+}
+bool inputVok() {
+  if(IV() > ILV && IV() < IHV){
+    return true;
+  } else {
+    return false;
+  }
+}
+bool outputVok() {
+  if(OV() > OLV && OV() < OHV){
+    return true;
+  } else {
+    return false;
+  }
+}
+bool currentok() {
+  if(amp() < OVL){
+    return true;
+  } else {
+    return false;
+  }
 }
 
-void runNormal() {}
+bool diffcheck() {
+  int dif = SETV - OV();
+  if(dif < 0){
+    dif = dif * -1;
+  }
+  if(dif > DIFF){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void runNormal() {
+  if(OV() < SETV && diffcheck() && inputVok() && currentok()){
+    digitalWrite(motor0Fwd, HIGH);
+  } else {
+    digitalWrite(motor0Fwd, LOW);
+  }
+  if(OV() > SETV && diffcheck() && inputVok() && currentok()){
+    digitalWrite(motor0Rev, HIGH);
+  } else {
+    digitalWrite(motor0Rev, LOW);
+  }
+
+  display("run",0);
+
+}
+
+int IV() {
+  return analogRead(inVolt);
+}
+
+int OV() {
+  return analogRead(outVolt);
+}
+
+int amp() {
+  return analogRead(current);
+}
 
 void home() {
   display("SETP", 0);
@@ -282,9 +360,9 @@ void setOUT(int PIN) {
 
 bool read(int PIN) {
   if(digitalRead(PIN)) {
-    return false;
-  } else {
     return true;
+  } else {
+    return false;
   }
 }
 
@@ -303,7 +381,7 @@ void display(String str, int deci) {
 void setupDisplay() {
     int displayType = COMMON_CATHODE;
 
-   int digit1 = A0; 
+   int digit1 = 2; 
    int digit2 = 3; 
    int digit3 = 4; 
    int digit4 = 5; 
