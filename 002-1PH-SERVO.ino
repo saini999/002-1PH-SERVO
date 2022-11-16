@@ -6,13 +6,22 @@
 SevSeg display1;
 
 //BlockNot screen(2, SECONDS);
-BlockNot INHV(200);
+BlockNot refresh(1, SECONDS);
 bool setupm = false;
 int IHV;
+int ILV;
+int OHV;
+int OLV;
+int SETV;
+int OVL;
+int TON;
+int TOFF;
+int DIFF;
 int enc;
 const int ok = 2;
 const int plus = A1;
 const int minus = A2;
+const int setupPin = A3;
 int encMenu;
 //int encMenu = 0;
 
@@ -26,7 +35,18 @@ setupDisplay();
 setIN(ok);
 setIN(plus);
 setIN(minus);
-IHV = EEPROM.read(0);
+setIN(setupPin);
+IHV = 2 * EEPROM.read(0);
+ILV = 2 * EEPROM.read(1);
+OHV = 2 * EEPROM.read(2);
+OLV = 2 * EEPROM.read(3);
+SETV = 2 * EEPROM.read(4);
+OVL = EEPROM.read(5);
+TON = EEPROM.read(6);
+TOFF = EEPROM.read(7);
+DIFF = EEPROM.read(8);
+
+
 //attachInterrupt(A3, encmenuup, RISING);
 }
 
@@ -34,55 +54,202 @@ void loop() {
   checkok();
   checkplus();
   checkminus();
+  if(read(setupPin)){
+    runSetup();
+  } else {
+    runNormal();
+  }
+}
 
+void runNormal() {}
+
+void home() {
+  display("SETP", 0);
+}
+
+void menuIHV() {
+  if(refresh.triggered(false)){
+    displayVar(IHV, 0);
+  } else {
+    display("IHV", 0);
+  }
+}
+
+void menuILV() {
+  if(refresh.triggered(false)){
+    displayVar(ILV, 0);
+  } else {
+    display("ILV", 0);
+  }
+}
+
+void menuOHV() {
+  if(refresh.triggered(false)){
+    displayVar(OHV, 0);
+  } else {
+    display("OHV", 0);
+  }
+}
+
+void menuOLV() {
+  if(refresh.triggered(false)){
+    displayVar(OLV, 0);
+  } else {
+    display("OLV", 0);
+  }
+}
+
+void menuSETV() {
+  if(refresh.triggered(false)){
+    displayVar(SETV, 0);
+  } else {
+    display("SETV", 0);
+  }
+}
+
+void menuOVL() {
+  if(refresh.triggered(false)){
+    displayVar(OVL, 0);
+  } else {
+    display("OVL", 0);
+  }
+}
+
+void menuTON() {
+  if(refresh.triggered(false)){
+    displayVar(TON, 0);
+  } else {
+    display("TON", 0);
+  }
+}
+
+void menuTOFF() {
+  if(refresh.triggered(false)){
+    displayVar(TOFF, 0);
+  } else {
+    display("TOFF", 0);
+  }
+}
+
+void menuDIFF() {
+  if(refresh.triggered(false)){
+    displayVar(DIFF, 0);
+  } else {
+    display("DIFF", 0);
+  }
+}
+
+void runSetup() {
   if(encMenu == 0) {
-    display("Abc1", 0);
+    home();
   }
   if(encMenu == 1) {
-    display("EF02", 0);
+    menuIHV();
   }
   if(encMenu == 2) {
-    display("Ab03", 0);
+    menuILV();
   }
   if(encMenu == 3) {
-    display("0003", 0);
+    menuOHV();
   }
   if(encMenu == 4) {
-    display("0004", 0);
+    menuOLV();
   }
   if(encMenu == 5) {
-    display("0005", 0);
+    menuSETV();
   }
   if(encMenu == 6) {
-    display("0006", 0);
+    menuOVL();
   }
   if(encMenu == 7) {
-    display("0007", 0);
+    menuTON();
   }
   if(encMenu == 8) {
-    display("0008", 0);
+    menuTOFF();
   }
-  if(encMenu > 8) {
+  if(encMenu == 9) {
+    menuDIFF();
+  }
+  if(encMenu > 9) {
     encMenu = 0;
   }
   if(encMenu < 0) {
-    encMenu = 8;
+    encMenu = 9;
   }
-
-
-
-  
 }
+
 
 
 void checkok() {
   if(read(ok) && okold == !read(ok)){
   okold = read(ok);
   encMenu++;
+  refresh.reset();
+  encUpdate();
+  eepromUpdate();
   }
   if(read(ok) == false){
   okold = read(ok);
   }
+}
+
+void eepromUpdate() {
+  EEPROM.update(0, IHV/2);
+  EEPROM.update(1, ILV/2);
+  EEPROM.update(2, OHV/2);
+  EEPROM.update(3, OLV/2);
+  EEPROM.update(4, SETV/2);
+  EEPROM.update(5, OVL);
+  EEPROM.update(6, TON);
+  EEPROM.update(7, TOFF);
+  EEPROM.update(8, DIFF);
+}
+
+void encUpdate() {
+  if(encMenu == 0) {
+    DIFF = enc;
+  }
+  if(encMenu == 1) {
+    enc = IHV;
+    }
+  if(encMenu == 2) {
+    IHV = enc;
+    enc = ILV;
+    }
+  if(encMenu == 3) {
+    ILV = enc;
+    enc = OHV;
+    }
+  if(encMenu == 4) {
+    OHV = enc;
+    enc = OLV;
+    }
+  if(encMenu == 5) {
+    OLV = enc;
+    enc = SETV;
+    }
+  if(encMenu == 6) {
+    SETV = enc;
+    enc = OVL;
+    }
+  if(encMenu == 7) {
+    OVL = enc;
+    enc = TON;
+    }
+  if(encMenu == 8) {
+    TON = enc;
+    enc = TOFF;
+    }
+  if(encMenu == 9) {
+    TOFF = enc;
+    enc = DIFF;
+    }
+}
+
+void displayVar(int var, int deci) {
+  char buffer[5];
+  sprintf(buffer, "%04d", var);
+  display1.DisplayString(buffer, deci);
 }
 
 void checkplus() {
@@ -114,7 +281,7 @@ void setOUT(int PIN) {
 }
 
 bool read(int PIN) {
-  if(digitalRead(PIN) == true) {
+  if(digitalRead(PIN)) {
     return false;
   } else {
     return true;
@@ -122,6 +289,10 @@ bool read(int PIN) {
 }
 
 void display(String str, int deci) {
+  int strl = str.length();
+  if(strl < 4) {
+    str = char(16) + str;
+  }
   int str_len = str.length() + 1;
   char data[str_len];
   str.toCharArray(data, str_len);
