@@ -1,6 +1,6 @@
 #include <EEPROM.h>
-#include <BlockNot.h>
-#include "SevSeg.h"
+#include <BlockNot.h> //https://github.com/EasyG0ing1/BlockNot
+#include "SevSeg.h" //https://github.com/sparkfun/SevSeg
 
 
 SevSeg display1;
@@ -71,7 +71,7 @@ void menuIHV() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("IHV", 0);
+    display("IHu", 0);
   }
 }
 
@@ -79,7 +79,7 @@ void menuILV() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("ILV", 0);
+    display("ILu", 0);
   }
 }
 
@@ -87,7 +87,7 @@ void menuOHV() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("OHV", 0);
+    display("OHu", 0);
   }
 }
 
@@ -95,7 +95,7 @@ void menuOLV() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("OLV", 0);
+    display("OLu", 0);
   }
 }
 
@@ -103,7 +103,7 @@ void menuSETV() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("SETV", 0);
+    display("SETu", 0);
   }
 }
 
@@ -111,7 +111,7 @@ void menuOVL() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("OVL", 0);
+    display("OuL", 0);
   }
 }
 
@@ -119,7 +119,7 @@ void menuTON() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("TON", 0);
+    display("tOn", 0);
   }
 }
 
@@ -127,7 +127,7 @@ void menuTOFF() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("TOFF", 0);
+    display("tOFF", 0);
   }
 }
 
@@ -135,7 +135,7 @@ void menuDIFF() {
   if(refresh.triggered(false)){
     displayVar(enc, 0);
   } else {
-    display("DIFF", 0);
+    display("dIFF", 0);
   }
 }
 
@@ -265,7 +265,7 @@ void checkplus() {
 void checkminus() {
   if(read(minus) && minusold == !read(minus)){
   minusold = read(minus);
-  enc++;
+  enc--;
   }
   if(read(minus) == false){
   minusold = read(minus);
@@ -290,10 +290,10 @@ bool read(int PIN) {
 
 void display(String str, int deci) {
   int strl = str.length();
- /* if(strl < 4) {
+  if(strl < 4) {
     str = char(16) + str;
   }
-  */
+
   int str_len = str.length() + 1;
   char data[str_len];
   str.toCharArray(data, str_len);
