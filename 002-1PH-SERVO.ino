@@ -52,6 +52,7 @@ const int outVolt = A1;
 const int current = A2;
 const int motor0Fwd = 5;
 const int motor0Rev = 6;
+const int power = 22;
 int encMenu;
 int menu;
 //int encMenu = 0;
@@ -60,11 +61,17 @@ bool okold = false;
 bool plusold = false;
 bool minusold = false;
 bool resetrefresh = false;
+bool alarmOnce = false;
+bool onTimer = false;
+bool offTimer = false;
 //uncomment these variables if running without setup pin
 /*
 bool mode = false;
 bool switched = false;
 */
+
+BlockNot on(TON, SECONDS);
+BlockNot off(TOFF, SECONDS);
 
 void setup() {
 setupDisplay();
@@ -78,9 +85,12 @@ setIN(outVolt);
 setIN(current);
 setOUT(motor0Fwd);
 setOUT(motor0Rev);
+setOUT(power);
+
 
 //This for Variables to read from Memory on startup
 //comment these variables while testing in proteus
+/**/
 IHV = 2 * EEPROM.read(0);
 ILV = 2 * EEPROM.read(1);
 OHV = 2 * EEPROM.read(2);
@@ -90,6 +100,7 @@ OVL = EEPROM.read(5);
 TON = EEPROM.read(6);
 TOFF = EEPROM.read(7);
 DIFF = EEPROM.read(8);
+/**/
 
 //uncomment these variables while testing in proteus
 /*
@@ -99,12 +110,20 @@ OHV = 580;
 OLV = 420;
 SETV = 512;
 OVL = 800;
-//TON = EEPROM.read(6);
-//TOFF = EEPROM.read(7);
+TON = 3;
+TOFF = 0;
 DIFF = 5;
 */
 
+on.setDuration(TON, SECONDS);
+off.setDuration(TOFF, SECONDS);
+on.reset();
+off.reset();
+
 }
+
+
+
 void loop() {
   checkok();
   checkplus();
@@ -178,19 +197,67 @@ void runNormal() {
     digitalWrite(motor0Rev, LOW);
   }
 
-  updateScreenData();
+  if(checksystem()){
+    updateScreenData(true);
+  } else {
+    updateScreenData(false);
+  }
+
+  updatePower();
 
 }
+bool checksystem() {
+  if(inputVok() && outputVok() && currentok()){
+    return true;
+  } else {
+    return false;
+  }
+}
 
-void updateScreenData() {
+void updatePower() {
+  if(checksystem()){
+  if(on.triggered(false))  
+    digitalWrite(power, HIGH);
+    off.reset();
+  } else if(off.triggered(false)) {
+    digitalWrite(power, LOW);
+    on.reset();
+  }
+}
+
+
+void updateScreenData(bool status) {
   //uncomment !mode and comment !read(setupPin) if setupPin is not being used
   if(/*!mode*/!read(setupPin)){
     if(!resetrefresh){
       refresh.reset();
       resetrefresh = true;
     }
+    if(!status && !alarmOnce){
+      alarmOnce = true;
+      menu == -1;
+    }
+    if(status && alarmOnce){
+      alarmOnce = false;
+      menu == 0;
+    }
     if(refresh.triggered()){
       menu++;
+    }
+    if(!status && menu == -1){
+      if(!inputVok() && !outputVok() && !currentok()){
+        display("ErAL", 0);
+      } else {
+        if(!inputVok()){
+          display("ErIn", 0);
+        }
+        if(!outputVok()){
+          display("ErOt", 0);
+        }
+        if(!currentok()){
+          display("ErOL", 0);
+        }
+      }
     }
     if(menu == 0){
       display("InUL", 0);
@@ -211,7 +278,11 @@ void updateScreenData() {
       displayVar(amp(), 0);
     }
     if(menu == 6){
-      menu = 0;
+      if(status){
+        menu = 0;
+      } else {
+        menu = -1;
+      }
     }
   }
 }
@@ -405,10 +476,14 @@ void encUpdate() {
   if(encMenu == 8) {
     TON = enc;
     enc = TOFF;
+    on.setDuration(TON, SECONDS);
+    on.reset();
     }
   if(encMenu == 9) {
     TOFF = enc;
     enc = DIFF;
+    off.setDuration(TOFF, SECONDS);
+    off.reset();
     }
 }
 
