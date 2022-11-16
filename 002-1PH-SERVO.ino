@@ -69,7 +69,7 @@ void home() {
 
 void menuIHV() {
   if(refresh.triggered(false)){
-    displayVar(IHV, 0);
+    displayVar(enc, 0);
   } else {
     display("IHV", 0);
   }
@@ -77,7 +77,7 @@ void menuIHV() {
 
 void menuILV() {
   if(refresh.triggered(false)){
-    displayVar(ILV, 0);
+    displayVar(enc, 0);
   } else {
     display("ILV", 0);
   }
@@ -85,7 +85,7 @@ void menuILV() {
 
 void menuOHV() {
   if(refresh.triggered(false)){
-    displayVar(OHV, 0);
+    displayVar(enc, 0);
   } else {
     display("OHV", 0);
   }
@@ -93,7 +93,7 @@ void menuOHV() {
 
 void menuOLV() {
   if(refresh.triggered(false)){
-    displayVar(OLV, 0);
+    displayVar(enc, 0);
   } else {
     display("OLV", 0);
   }
@@ -101,7 +101,7 @@ void menuOLV() {
 
 void menuSETV() {
   if(refresh.triggered(false)){
-    displayVar(SETV, 0);
+    displayVar(enc, 0);
   } else {
     display("SETV", 0);
   }
@@ -109,7 +109,7 @@ void menuSETV() {
 
 void menuOVL() {
   if(refresh.triggered(false)){
-    displayVar(OVL, 0);
+    displayVar(enc, 0);
   } else {
     display("OVL", 0);
   }
@@ -117,7 +117,7 @@ void menuOVL() {
 
 void menuTON() {
   if(refresh.triggered(false)){
-    displayVar(TON, 0);
+    displayVar(enc, 0);
   } else {
     display("TON", 0);
   }
@@ -125,7 +125,7 @@ void menuTON() {
 
 void menuTOFF() {
   if(refresh.triggered(false)){
-    displayVar(TOFF, 0);
+    displayVar(enc, 0);
   } else {
     display("TOFF", 0);
   }
@@ -133,7 +133,7 @@ void menuTOFF() {
 
 void menuDIFF() {
   if(refresh.triggered(false)){
-    displayVar(DIFF, 0);
+    displayVar(enc, 0);
   } else {
     display("DIFF", 0);
   }
@@ -290,9 +290,10 @@ bool read(int PIN) {
 
 void display(String str, int deci) {
   int strl = str.length();
-  if(strl < 4) {
+ /* if(strl < 4) {
     str = char(16) + str;
   }
+  */
   int str_len = str.length() + 1;
   char data[str_len];
   str.toCharArray(data, str_len);
