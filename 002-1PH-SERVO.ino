@@ -1,3 +1,23 @@
+/*
+Project: NAS-002-1PH-SERVO
+Description: Automatic Voltage Stablizer Control for Single Phase AC Supply
+Project URL: https://github.com/saini999/002-1PH-SERVO
+Author: saini999, https://github.com/saini999 // Discord: N00R#2080
+
+Arduino Board: Arduino UNO ( to be changed to Mega2560 in future due to less IO pins)
+
+Project Start Date: 16-Nov-2022
+Last Update: 16-Nov-2022
+
+Input Voltage: Pin A3 (Through Voltage Divider)
+Output Voltage: Pin A4 (Through Voltage Divider)
+Current CT Sensor: Pin A5 (Through Voltage Divider)
+
+Servo Motor Forward: Pin 0
+Servo Motor Reverse: Pin 1
+
+*/
+
 #include <EEPROM.h>
 #include <BlockNot.h> //https://github.com/EasyG0ing1/BlockNot
 #include "SevSeg.h" //https://github.com/sparkfun/SevSeg
